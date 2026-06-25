@@ -1,0 +1,1 @@
+export { Zeroizer } from './Zeroizer';

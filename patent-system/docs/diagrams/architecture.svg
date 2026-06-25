@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 680" xmlns="http://www.w3.org/2000/svg" font-family="Courier New, monospace">
+  <rect width="800" height="680" fill="#0a0a0a"/>
+
+  <!-- Title -->
+  <text x="400" y="32" text-anchor="middle" fill="#00ff88" font-size="14" letter-spacing="3">PATENT: DYNAMIC RUNTIME KEY RECONSTRUCTION SYSTEM</text>
+  <line x1="50" y1="44" x2="750" y2="44" stroke="#00ff8830" stroke-width="1"/>
+
+  <!-- CLIENT -->
+  <rect x="300" y="60" width="200" height="44" rx="3" fill="#00ff8812" stroke="#00ff8850" stroke-width="1.5"/>
+  <text x="400" y="87" text-anchor="middle" fill="#00ff88" font-size="11" letter-spacing="1">CLIENT REQUEST</text>
+
+  <!-- Arrow down -->
+  <line x1="400" y1="104" x2="400" y2="128" stroke="#00ff8850" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- EXPRESS MIDDLEWARE -->
+  <rect x="250" y="128" width="300" height="44" rx="3" fill="#00aaff12" stroke="#00aaff50" stroke-width="1.5"/>
+  <text x="400" y="155" text-anchor="middle" fill="#00aaff" font-size="11" letter-spacing="1">EXPRESS MIDDLEWARE</text>
+
+  <!-- Four shard arrows from middleware -->
+  <line x1="280" y1="172" x2="100" y2="222" stroke="#00ff8830" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="340" y1="172" x2="260" y2="222" stroke="#00ff8830" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="460" y1="172" x2="540" y2="222" stroke="#00ff8830" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="520" y1="172" x2="700" y2="222" stroke="#00ff8830" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <text x="400" y="210" text-anchor="middle" fill="#00ff8840" font-size="9" letter-spacing="1">SHARD ENGINE ASSEMBLES 4 INDEPENDENT INPUTS</text>
+
+  <!-- SHARD A -->
+  <rect x="30" y="222" width="140" height="52" rx="3" fill="#ff880012" stroke="#ff880050" stroke-width="1"/>
+  <text x="100" y="244" text-anchor="middle" fill="#ff8800" font-size="10">SHARD A</text>
+  <text x="100" y="260" text-anchor="middle" fill="#ff880080" font-size="9">Hardware Seed</text>
+  <text x="100" y="272" text-anchor="middle" fill="#ff880060" font-size="8">(SoftwareHSM)</text>
+
+  <!-- SHARD B -->
+  <rect x="190" y="222" width="140" height="52" rx="3" fill="#ff440012" stroke="#ff440050" stroke-width="1"/>
+  <text x="260" y="244" text-anchor="middle" fill="#ff4444" font-size="10">SHARD B</text>
+  <text x="260" y="260" text-anchor="middle" fill="#ff444480" font-size="9">Server Secret</text>
+  <text x="260" y="272" text-anchor="middle" fill="#ff444460" font-size="8">(ENV, never logged)</text>
+
+  <!-- SHARD C -->
+  <rect x="470" y="222" width="140" height="52" rx="3" fill="#8800ff12" stroke="#8800ff50" stroke-width="1"/>
+  <text x="540" y="244" text-anchor="middle" fill="#aa44ff" font-size="10">SHARD C</text>
+  <text x="540" y="260" text-anchor="middle" fill="#aa44ff80" font-size="9">Session Nonce</text>
+  <text x="540" y="272" text-anchor="middle" fill="#aa44ff60" font-size="8">(random per-request)</text>
+
+  <!-- SHARD D -->
+  <rect x="630" y="222" width="140" height="52" rx="3" fill="#00ffff12" stroke="#00ffff50" stroke-width="1"/>
+  <text x="700" y="244" text-anchor="middle" fill="#00ffcc" font-size="10">SHARD D</text>
+  <text x="700" y="260" text-anchor="middle" fill="#00ffcc80" font-size="9">Telemetry Fingerprint</text>
+  <text x="700" y="272" text-anchor="middle" fill="#00ffcc60" font-size="8">(session+time+server)</text>
+
+  <!-- Arrows from shards to HKDF -->
+  <line x1="100" y1="274" x2="330" y2="336" stroke="#00ff8830" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="260" y1="274" x2="360" y2="336" stroke="#00ff8830" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="540" y1="274" x2="440" y2="336" stroke="#00ff8830" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="700" y1="274" x2="470" y2="336" stroke="#00ff8830" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- HKDF -->
+  <rect x="250" y="336" width="300" height="44" rx="3" fill="#00ff8812" stroke="#00ff8850" stroke-width="1.5"/>
+  <text x="400" y="358" text-anchor="middle" fill="#00ff88" font-size="11" letter-spacing="1">HKDF-SHA256</text>
+  <text x="400" y="374" text-anchor="middle" fill="#00ff8870" font-size="9">derives 256-bit runtime key</text>
+
+  <!-- Arrow to AES -->
+  <line x1="400" y1="380" x2="400" y2="406" stroke="#00ff8850" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="470" y="398" fill="#00ff8840" font-size="9">runtime key</text>
+
+  <!-- AES -->
+  <rect x="250" y="406" width="300" height="44" rx="3" fill="#00ff8812" stroke="#00ff8850" stroke-width="1.5"/>
+  <text x="400" y="428" text-anchor="middle" fill="#00ff88" font-size="11" letter-spacing="1">AES-256-GCM ENGINE</text>
+  <text x="400" y="444" text-anchor="middle" fill="#00ff8870" font-size="9">encrypt / decrypt + auth tag</text>
+
+  <!-- Arrow to MongoDB -->
+  <line x1="400" y1="450" x2="400" y2="476" stroke="#00ff8850" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="470" y="468" fill="#00ff8840" font-size="9">ciphertext + IV + authTag</text>
+
+  <!-- MongoDB -->
+  <rect x="250" y="476" width="300" height="52" rx="3" fill="#00ff8812" stroke="#00ff8850" stroke-width="1.5"/>
+  <text x="400" y="498" text-anchor="middle" fill="#00ff88" font-size="11" letter-spacing="1">MONGODB</text>
+  <text x="400" y="514" text-anchor="middle" fill="#00ff8870" font-size="9">stores: ciphertext | iv | authTag | metadata</text>
+  <text x="400" y="526" text-anchor="middle" fill="#ff444460" font-size="8">NEVER: key | seed | secret | plaintext</text>
+
+  <!-- Arrow to Zeroize -->
+  <line x1="400" y1="528" x2="400" y2="556" stroke="#ff444450" stroke-width="1.5" marker-end="url(#zarr)"/>
+
+  <!-- ZEROIZE -->
+  <rect x="250" y="556" width="300" height="44" rx="3" fill="#ff440010" stroke="#ff444050" stroke-width="1.5"/>
+  <text x="400" y="578" text-anchor="middle" fill="#ff6666" font-size="11" letter-spacing="1">AUTOMATIC ZEROIZATION</text>
+  <text x="400" y="594" text-anchor="middle" fill="#ff666670" font-size="9">Buffer.fill(0) — all key material erased</text>
+
+  <!-- Footer -->
+  <line x1="50" y1="618" x2="750" y2="618" stroke="#00ff8820" stroke-width="1"/>
+  <text x="400" y="638" text-anchor="middle" fill="#00ff8840" font-size="9" letter-spacing="1">NO KEY EXISTS AT REST — RUNTIME RECONSTRUCTION ONLY</text>
+  <text x="400" y="654" text-anchor="middle" fill="#00ff8830" font-size="9">Patent Prototype — Dynamic Runtime Key Reconstruction System</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#00ff8860"/>
+    </marker>
+    <marker id="zarr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#ff444460"/>
+    </marker>
+  </defs>
+</svg>

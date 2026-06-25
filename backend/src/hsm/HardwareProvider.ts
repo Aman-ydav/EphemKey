@@ -4,8 +4,11 @@
  * Future: TPM, AWS KMS, Azure Key Vault, TEE.
  */
 export interface HardwareProvider {
-  /** Returns a fresh hardware-bound seed buffer (Shard A). */
-  getSeed(): Promise<Buffer>;
+  /** Returns a session-stable hardware-bound seed buffer (Shard A).
+   *  Same sessionId → same seed within a master-seed rotation period.
+   *  Different sessionId → different seed.
+   */
+  getSeed(sessionId: string): Promise<Buffer>;
   /** Wipes internal seed material. */
   destroy(): Promise<void>;
   /** Returns true if the provider is operational. */

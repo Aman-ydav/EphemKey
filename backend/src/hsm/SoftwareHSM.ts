@@ -23,16 +23,13 @@ export class SoftwareHSM implements HardwareProvider {
     this.rotationTimer.unref();
   }
 
-  async getSeed(): Promise<Buffer> {
-    // Derive a request-specific seed from the master seed so that each call
-    // produces a unique Shard A without exposing the master directly.
-    const nonce = randomBytes(16);
+  async getSeed(sessionId: string): Promise<Buffer> {
+    // Derive a session-stable seed: same sessionId → same Shard A within this
+    // master-seed rotation period. The master seed is never exposed directly.
     const hmac = createHmac('sha256', this.masterSeed);
-    hmac.update(nonce);
+    hmac.update(Buffer.from(sessionId));
     hmac.update(Buffer.from(this.serverId));
-    const derived = Buffer.concat([hmac.digest(), nonce]); // 48 bytes
-    nonce.fill(0);
-    return derived;
+    return hmac.digest(); // 32 bytes
   }
 
   async destroy(): Promise<void> {

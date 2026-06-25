@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { createHmac } from 'crypto';
 import { HardwareProvider } from '../hsm/HardwareProvider';
 import { TelemetryEngine, TelemetrySnapshot } from '../telemetry/TelemetryEngine';
 import { deriveKey } from '../crypto/hkdf';
@@ -23,14 +23,20 @@ export class ShardEngine {
   ) {}
 
   async reconstruct(req: Request, sessionId: string, requestStart: bigint): Promise<ShardEngineResult> {
-    // Shard A — hardware seed
-    const shardA = await this.hwProvider.getSeed();
+    // Shard A — hardware seed (deterministic per session via sessionId)
+    const shardA = await this.hwProvider.getSeed(sessionId);
 
     // Shard B — server secret (persistent, never stored in DB)
     const shardB = Buffer.from(this.serverSecret); // copy so we can wipe the copy
 
-    // Shard C — session nonce (ephemeral per-request random)
-    const shardC = randomBytes(32);
+    // Shard C — session nonce: deterministic per session, unique across sessions.
+    // Derived as HMAC-SHA256(serverSecret, sessionId) so that:
+    //   - encrypt and decrypt within the same session reconstruct the same key
+    //   - a different session ID produces a completely different Shard C (replay prevention)
+    //   - the sessionId alone is not sufficient to derive the key (server secret required)
+    const shardC = createHmac('sha256', this.serverSecret)
+      .update(Buffer.from(sessionId))
+      .digest();
 
     // Shard D — telemetry fingerprint
     const telemetry = this.telemetryEngine.collect(req, sessionId, requestStart);

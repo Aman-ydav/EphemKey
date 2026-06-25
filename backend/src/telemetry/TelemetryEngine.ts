@@ -24,19 +24,22 @@ export class TelemetryEngine {
   }
 
   collect(req: Request, sessionId: string, requestStart: bigint): TelemetrySnapshot {
-    const nowMs = Number(process.hrtime.bigint() / 1_000_000n);
     const latencyHint = Number((process.hrtime.bigint() - requestStart) / 1_000_000n);
 
     const requestNonce = randomBytes(16);
+
+    // Timestamp window is floored to WINDOW_SECONDS so that encrypt and decrypt
+    // requests made within the same window produce the same fingerprint.
     const timestampWindow = Math.floor(Date.now() / 1000 / WINDOW_SECONDS);
 
-    // Build fingerprint from runtime factors — no user-identifiable data
+    // Build fingerprint from session-stable factors only.
+    // latencyHint, requestNonce, and timestampWindow are excluded from the hash:
+    // they vary per request or per 30-second window and would produce a different
+    // key for decrypt than was used for encrypt. They are recorded for
+    // audit/observability only.
     const hash = createHash('sha256');
     hash.update(sessionId);
-    hash.update(requestNonce);
-    hash.update(Buffer.from(String(timestampWindow)));
     hash.update(Buffer.from(this.serverId));
-    hash.update(Buffer.from(String(latencyHint)));
 
     const fingerprint = hash.digest();
 
